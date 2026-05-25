@@ -60,10 +60,10 @@ public class PatientController {
 
     @DeleteMapping("/patients/{id}")
     public String deletePatient(
-            @PathVariable int id) {
+        @PathVariable Integer id) {
 
-        patientRepository.deleteById(id);
+    patientRepository.deleteById(id);
 
-        return "Patient Deleted Successfully";
-    }
+    return "Patient Deleted Successfully";
+}
 }
