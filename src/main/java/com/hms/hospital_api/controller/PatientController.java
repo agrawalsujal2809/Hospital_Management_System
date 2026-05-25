@@ -3,8 +3,11 @@ package com.hms.hospital_api.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,8 +22,15 @@ public class PatientController {
 
     @GetMapping("/patients")
     public List<Patient> getAllPatients() {
-
         return patientRepository.findAll();
+    }
+
+    @GetMapping("/patients/{id}")
+    public Patient getPatientById(
+            @PathVariable int id) {
+
+        return patientRepository.findById(id)
+                .orElse(null);
     }
 
     @PostMapping("/patients")
@@ -28,5 +38,32 @@ public class PatientController {
             @RequestBody Patient patient) {
 
         return patientRepository.save(patient);
+    }
+
+    @PutMapping("/patients/{id}")
+    public Patient updatePatient(
+            @PathVariable int id,
+            @RequestBody Patient updatedPatient) {
+
+        Patient patient =
+                patientRepository.findById(id)
+                        .orElseThrow();
+
+        patient.setName(
+                updatedPatient.getName());
+
+        patient.setDisease(
+                updatedPatient.getDisease());
+
+        return patientRepository.save(patient);
+    }
+
+    @DeleteMapping("/patients/{id}")
+    public String deletePatient(
+            @PathVariable int id) {
+
+        patientRepository.deleteById(id);
+
+        return "Patient Deleted Successfully";
     }
 }
