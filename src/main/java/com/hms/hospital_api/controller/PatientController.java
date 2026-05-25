@@ -3,6 +3,7 @@ package com.hms.hospital_api.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +16,7 @@ import com.hms.hospital_api.entity.Patient;
 import com.hms.hospital_api.repository.PatientRepository;
 
 @RestController
+@CrossOrigin(origins = "*")
 public class PatientController {
 
     @Autowired
@@ -26,44 +28,38 @@ public class PatientController {
     }
 
     @GetMapping("/patients/{id}")
-    public Patient getPatientById(
-            @PathVariable int id) {
-
-        return patientRepository.findById(id)
-                .orElse(null);
+    public Patient getPatientById(@PathVariable Integer id) {
+        return patientRepository.findById(id).orElse(null);
     }
 
     @PostMapping("/patients")
-    public Patient addPatient(
-            @RequestBody Patient patient) {
-
+    public Patient addPatient(@RequestBody Patient patient) {
         return patientRepository.save(patient);
     }
 
     @PutMapping("/patients/{id}")
     public Patient updatePatient(
-            @PathVariable int id,
+            @PathVariable Integer id,
             @RequestBody Patient updatedPatient) {
 
         Patient patient =
-                patientRepository.findById(id)
-                        .orElseThrow();
+                patientRepository.findById(id).orElse(null);
 
-        patient.setName(
-                updatedPatient.getName());
+        if (patient != null) {
+            patient.setName(updatedPatient.getName());
+            patient.setDisease(updatedPatient.getDisease());
 
-        patient.setDisease(
-                updatedPatient.getDisease());
+            return patientRepository.save(patient);
+        }
 
-        return patientRepository.save(patient);
+        return null;
     }
 
     @DeleteMapping("/patients/{id}")
-    public String deletePatient(
-        @PathVariable Integer id) {
+    public String deletePatient(@PathVariable Integer id) {
 
-    patientRepository.deleteById(id);
+        patientRepository.deleteById(id);
 
-    return "Patient Deleted Successfully";
-}
+        return "Patient Deleted Successfully";
+    }
 }

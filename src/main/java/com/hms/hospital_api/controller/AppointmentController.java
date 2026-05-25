@@ -3,18 +3,13 @@ package com.hms.hospital_api.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.hms.hospital_api.entity.Appointment;
 import com.hms.hospital_api.repository.AppointmentRepository;
 
 @RestController
+@CrossOrigin(origins = "*")
 public class AppointmentController {
 
     @Autowired
@@ -22,15 +17,15 @@ public class AppointmentController {
 
     @GetMapping("/appointments")
     public List<Appointment> getAllAppointments() {
-
         return appointmentRepository.findAll();
     }
 
     @GetMapping("/appointments/{id}")
     public Appointment getAppointmentById(
-            @PathVariable int id) {
+            @PathVariable Integer id) {
 
-        return appointmentRepository.findById(id)
+        return appointmentRepository
+                .findById(id)
                 .orElse(null);
     }
 
@@ -43,32 +38,26 @@ public class AppointmentController {
 
     @PutMapping("/appointments/{id}")
     public Appointment updateAppointment(
-            @PathVariable int id,
+            @PathVariable Integer id,
             @RequestBody Appointment updatedAppointment) {
 
         Appointment appointment =
-                appointmentRepository.findById(id)
-                        .orElseThrow();
+                appointmentRepository
+                        .findById(id)
+                        .orElse(null);
 
-        appointment.setPatient(
-                updatedAppointment.getPatient());
+        if (appointment != null) {
 
-        appointment.setDoctor(
-                updatedAppointment.getDoctor());
+            return appointmentRepository
+                    .save(updatedAppointment);
+        }
 
-        appointment.setDate(
-                updatedAppointment.getDate());
-
-        appointment.setTime(
-                updatedAppointment.getTime());
-
-        return appointmentRepository.save(
-                appointment);
+        return null;
     }
 
     @DeleteMapping("/appointments/{id}")
     public String deleteAppointment(
-            @PathVariable int id) {
+            @PathVariable Integer id) {
 
         appointmentRepository.deleteById(id);
 
